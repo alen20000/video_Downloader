@@ -117,5 +117,3 @@ class App(tk.Tk): #繼承tk.Tk
         self.top= TopFrame(self)
         self.console = MiddleFrame(self) #優先級要高，要先接管
         self.botton = BottonFrame(self)
-        #啟動
-        self.mainloop()

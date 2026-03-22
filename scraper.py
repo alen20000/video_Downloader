@@ -51,12 +51,18 @@ class VideoDownloader:
 
     def _get_title(self):
 
-
         tag = self.soup.find('h1', class_='title')
+
         if not tag:
             raise Exception('找不到標題')
+        
         self.title = tag.text.strip()
         print(f"影片名稱:{self.title}")
+
+    def _get_download_links(self):
+        '''找所有影片載點'''
+
+        self.links =self.soup.find_all('a', attrs={'data-attach-session':'PHPSESSID'})
 
     def _select_mode(self):
         '''轉換CLI 或 UI 模式，預設UI '''
@@ -80,40 +86,43 @@ class VideoDownloader:
         '''專職下載，多緒在UI觸發時調用'''
         time.sleep(random.uniform(2, 4))
         res =  self.session.get(self.select_url ,stream=True,timeout=30)
+
+        if not res.ok:
+            raise Exception(f'下載請求失敗：{res.status_code}')
+    
         total = int(res.headers.get('content-length', 0))  # 檔案總大小
         os.makedirs('downloads', exist_ok=True)
 
         with open(f'downloads/{self.title}.mp4','wb') as f:
-            for chunk in res.iter_content(chunk_size=1024*1024):  # 每次1MB
-                f.write(chunk)
-                self.downloaded += len(chunk)
-                percent = int(self.downloaded / total * 100)
-                if self.on_progress:
-                    self.on_progress(percent, self.downloaded, total)
+            try:
+                for chunk in res.iter_content(chunk_size=1024*1024):  # 每次1MB
+                    f.write(chunk)
+                    self.downloaded += len(chunk)
+                    percent = int(self.downloaded / total * 100)
+                    if self.on_progress:
+                        self.on_progress(percent, self.downloaded, total)
+            except Exception as e:
+                raise Exception (f'下載中斷:{e}')  #這裡raise 給run 的 except 去處理，比較統一 
 
     def _enter_page(self):
-        '''CLI介面、校調用'''
+        '''for CLI,optional'''
 
         if self.url is None:
-            self.url = input('輸入網址:')
-            self.headers['referer'] = self.url 
+            pass
         else:
-            self.headers['referer'] = self.url 
+            pass
 
     def _manual_select(self): 
-        '''CLI模式'''
+        '''for CLI'''
         pass
 
     def _display_download_information(self):
-        '''CLI使用，遍歷可用畫質選項'''
+        '''遍歷可用畫質選項'''
 
         for i , item in enumerate(self.links):
             text = item.get_text(strip= True)
             print(f"{i+1}",text)
 
-    def _get_download_links(self):
-        '''CLI用，找所有影片載點'''
 
-        self.links =self.soup.find_all('a', attrs={'data-attach-session':'PHPSESSID'})
  
 
