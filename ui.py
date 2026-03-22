@@ -76,7 +76,7 @@ class BottonFrame(tk.Frame):
     def __init__(self,parent):
         super().__init__(parent)
         self.pack(fill='x', padx=5, pady=5)
-        self._build_Button()
+        self._build_Buttom()
         self._build_progress()
 
     def _build_progress(self):
@@ -90,7 +90,7 @@ class BottonFrame(tk.Frame):
         self.progress['value'] = percent
         self.progress_label['text']=f"{percent}%  |  {downloaded/1024/1024:.1f}MB / {total/1024/1024:.1f}MB"
 
-    def _build_Button(self):
+    def _build_Buttom(self):
         self.urls = None
         ttk.Button(self, text="開始下載", command=self._on_download_click).pack() 
 
