@@ -23,7 +23,7 @@ class VideoDownloader:
         self.links = None 
         self.select_url =None  # 即將下載的URL
         self.on_progress = on_progress  #
-        self.downloaded = 0
+        self.downloaded = 0 #計算以下載的位元組
 
         #run
         self.run()
@@ -110,7 +110,7 @@ class VideoDownloader:
                 percent = int(self.downloaded / total * 100)
                 if self.on_progress:
                     self.on_progress(percent, self.downloaded, total)
-        print('下載完成')
+
 
 
 

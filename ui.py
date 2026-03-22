@@ -102,6 +102,7 @@ class BottonFrame(tk.Frame):
         self.urls = self.master.top.get_urls()
         for i in self.urls:
             VideoDownloader(i,on_progress=self._update_progress)
+            print('下載完成')
 
 class App(tk.Tk): #繼承tk.Tk
 
