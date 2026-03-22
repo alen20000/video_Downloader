@@ -20,7 +20,6 @@ class VideoDownloader:
         self.soup = None
         self.links = None # list,所有選項
         self.title = None
-        self.UI_mode = True  # 預設自動模式
         self.links = None 
         self.select_url =None  # 即將下載的URL
         self.on_progress = on_progress  #
@@ -34,7 +33,7 @@ class VideoDownloader:
             self._get_soup()
             self._get_title()
             self._get_download_links()
-            self._select_mode()
+            self._select_high_quality()
             self._start_download()
         except Exception as e:
             print(e)
@@ -64,12 +63,7 @@ class VideoDownloader:
 
         self.links =self.soup.find_all('a', attrs={'data-attach-session':'PHPSESSID'})
 
-    def _select_mode(self):
-        '''轉換CLI 或 UI 模式，預設UI '''
-        if self.UI_mode:
-            self._select_high_quality()
-        else:
-            self._manual_select()
+
 
     def _select_high_quality(self):
         '''自動選最高畫質'''
@@ -103,25 +97,32 @@ class VideoDownloader:
                         self.on_progress(percent, self.downloaded, total)
             except Exception as e:
                 raise Exception (f'下載中斷:{e}')  #這裡raise 給run 的 except 去處理，比較統一 
+            
+            
+    # def _select_mode(self):
+    #     '''轉換CLI 或 UI 模式，預設UI '''
+    #     if self.UI_mode:
+    #         self._select_high_quality()
+    #     else:
+    #         self._manual_select()
+    # def _enter_page(self):
+    #     '''for CLI,optional'''
 
-    def _enter_page(self):
-        '''for CLI,optional'''
+    #     if self.url is None:
+    #         pass
+    #     else:
+    #         pass
 
-        if self.url is None:
-            pass
-        else:
-            pass
+    # def _manual_select(self): 
+    #     '''for CLI'''
+    #     pass
 
-    def _manual_select(self): 
-        '''for CLI'''
-        pass
+    # def _display_download_information(self):
+    #     '''遍歷可用畫質選項'''
 
-    def _display_download_information(self):
-        '''遍歷可用畫質選項'''
-
-        for i , item in enumerate(self.links):
-            text = item.get_text(strip= True)
-            print(f"{i+1}",text)
+    #     for i , item in enumerate(self.links):
+    #         text = item.get_text(strip= True)
+    #         print(f"{i+1}",text)
 
 
  
