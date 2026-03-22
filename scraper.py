@@ -9,13 +9,14 @@ import sys
 class VideoDownloader:
 
     def __init__(self,url=None,on_progress=None):
-        self.url = url
-        self.headers={
-            'user-agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36'
-            ,'Cookie':'_ga=GA1.1.1749939079.1758564712; kt_tcookie=1; kt_is_visited=1; _ga_3YMG8Q26HX=GS2.1.s1771777049$o15$g1$t1771778336$j60$l0$h0'
-            }
+
+        self.session = requests.Session()
+        self.session.headers.update=({
+            'user-agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36',"Referer":"www.google.com"
+            })
         
         #初始化
+        self.url = url
         self.soup = None
         self.links = None # list,所有選項
         self.title = None
@@ -39,7 +40,7 @@ class VideoDownloader:
     def _get_soup(self): 
 
         time.sleep(random.uniform(2, 4))  #隨機延遲
-        res = requests.get(self.url,headers=self.headers,timeout=30)
+        res = self.session.get(self.url,timeout=30)
         self.soup = BeautifulSoup(res.text,'html.parser')
 
     def _get_title(self):
@@ -67,7 +68,7 @@ class VideoDownloader:
     def _start_download(self): 
         '''專職下載，多緒在UI觸發時調用'''
         time.sleep(random.uniform(2, 4))
-        res = requests.get(self.select_url ,headers=self.headers,stream=True,timeout=30)
+        res =  self.session.get(self.select_url ,stream=True,timeout=30)
         total = int(res.headers.get('content-length', 0))  # 檔案總大小
         os.makedirs('downloads', exist_ok=True)
 
