@@ -24,15 +24,30 @@ class VideoDownloader:
 
         self.session = requests.Session()
         self.session.headers.update({
-            'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N)...',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'accept-language': 'zh-TW,zh;q=0.9,en;q=0.8','referer': self.url
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,ja-JP;q=0.6,ja;q=0.5',
+            'Upgrade-Insecure-Requests': '1',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            # 加上關鍵的 sec- 瀏覽器行為特徵，破解高級防火牆
+            'sec-ch-ua': '"Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"',
+            'sec-ch-ua-mobile': '?1',
+            'sec-ch-ua-platform': '"Android"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
         })
+        
+        # 3. 破解防盜鏈：自動把目標網址設定為來源網頁
+        # if self.url:
+        #     self.session.headers.update({'Referer': self.url})
 
-        #run
-        self.run()
 
     def run(self):
+        if not self.url:
+            raise Exception('No URL')
         try:
             self._get_soup()
             self._get_title()
@@ -40,13 +55,23 @@ class VideoDownloader:
             self._select_high_quality()
             self._start_download()
         except Exception as e:
-            print(e)
+            print(f'Error:{e}')
+
+    def run_cli(self):
+        '''命令列模式'''
+        self._get_soup()
+        self._get_title()
+        self._get_download_links()
+        print(self.links)
 
     def _get_soup(self): 
 
         time.sleep(random.uniform(1, 2))  #隨機延遲
-        res = self.session.get(self.url,timeout=30)
-        
+        res = self.session.get(self.url)
+
+        # HTTPError
+        res.raise_for_status() 
+
         if not res.ok:
             raise Exception
         
@@ -133,3 +158,10 @@ class VideoDownloader:
 
  
 
+'''測試'''
+
+if __name__ == '__main__':
+
+    url = 'https://www.85po.com/v/27158/zi-fen-yong--2/'
+    downloader = VideoDownloader(url)
+    downloader.run_cli()

@@ -126,7 +126,8 @@ class BottonFrame(tk.Frame):
             return
         
         for i in self.urls:
-            VideoDownloader(i,on_progress=self._update_progress)
+            dornload = VideoDownloader(i,on_progress=self._update_progress)
+            dornload.run()
             print('下載完成')
         
         self.after(0,lambda:self.start_bt.config(state='normal'))
